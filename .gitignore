@@ -1,0 +1,47 @@
+# Django
+*.pyc
+*__pycache__/
+db.sqlite3
+migrations/*.py
+!migrations/__init__.py
+
+# Environment
+.env
+.env.local
+.env.production
+.venv
+venv/
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# Static files
+staticfiles/
+media/
+
+# Backups
+backups/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SSL certificates (never commit these!)
+ssl/
+*.key
+*.pem
+*.crt
+
+# Database dumps
+*.sql
+*.dump

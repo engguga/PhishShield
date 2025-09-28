@@ -1,0 +1,38 @@
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV DEBIAN_FRONTEND noninteractive
+
+# Create app user
+RUN groupadd -r app && useradd -r -g app app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set work directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy project
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/staticfiles /app/media /var/log/phishshield
+RUN chown -R app:app /app /var/log/phishshield
+
+# Switch to non-root user
+USER app
+
+# Expose port
+EXPOSE 8000
+
+# Start command
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-"]

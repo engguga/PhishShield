@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=phishshield
+      - POSTGRES_USER=phishshield_user
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    command: >
+      postgres -c ssl=on 
+      -c ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem 
+      -c ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+    volumes:
+      - ./ssl:/etc/ssl/certs:ro
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://phishshield_user:${DATABASE_PASSWORD}@db:5432/phishshield
+      - REDIS_URL=redis://redis:6379/0
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+    volumes:
+      - static_volume:/app/staticfiles
+      - log_volume:/var/log/phishshield
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phishshield.rule=Host(`yourdomain.com`)"
+      - "traefik.http.routers.phishshield.tls=true"
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    command: celery -A core worker --loglevel=info
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://phishshield_user:${DATABASE_PASSWORD}@db:5432/phishshield
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    command: celery -A core beat --loglevel=info
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=postgresql://phishshield_user:${DATABASE_PASSWORD}@db:5432/phishshield
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.25
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/app/staticfiles:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  log_volume:

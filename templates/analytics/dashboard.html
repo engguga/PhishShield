@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Security Analytics Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .stat-number { font-size: 2.5em; font-weight: bold; margin: 10px 0; }
+        .positive { color: #28a745; }
+        .negative { color: #dc3545; }
+        .events-table { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: 600; }
+        .nav { background: #343a40; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .nav a { color: white; text-decoration: none; margin-right: 20px; }
+        .nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/analytics/dashboard/">Dashboard</a>
+            <a href="/analytics/security-logs/">Security Logs</a>
+            <a href="/admin/">Admin</a>
+            <a href="/admin/logout/">Logout</a>
+        </div>
+        
+        <div class="header">
+            <h1>🔒 Security Analytics Dashboard</h1>
+            <p>Period: {{ period }}</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Phishing Clicks</h3>
+                <div class="stat-number">{{ phishing_clicks }}</div>
+                <p>Total simulated clicks</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Simulations Sent</h3>
+                <div class="stat-number">{{ total_simulations }}</div>
+                <p>Total emails sent</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Click Rate</h3>
+                <div class="stat-number {% if click_rate > 20 %}negative{% else %}positive{% endif %}">
+                    {{ click_rate }}%
+                </div>
+                <p>Percentage of users who clicked</p>
+            </div>
+        </div>
+        
+        <div class="events-table">
+            <h3 style="padding: 20px; margin: 0;">Recent Security Events</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        <th>IP Address</th>
+                        <th>Timestamp</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in recent_events %}
+                    <tr>
+                        <td>{{ event.get_event_type_display }}</td>
+                        <td>{{ event.user_ip }}</td>
+                        <td>{{ event.timestamp }}</td>
+                        <td>{{ event.details }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">No events found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

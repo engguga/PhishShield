@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Security Awareness Training</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .alert { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 5px; }
+        .success { background: #d1ecf1; border: 1px solid #bee5eb; padding: 20px; border-radius: 5px; }
+        .warning { color: #856404; }
+        .info { color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="alert">
+        <h2>⚠️ This was a Phishing Simulation</h2>
+        <p><strong>You just clicked on a simulated phishing link!</strong></p>
+        <p>This was a security awareness test conducted by your organization.</p>
+    </div>
+    
+    <div class="success">
+        <h3>📚 What to learn from this:</h3>
+        <ul>
+            <li>Always verify the sender's email address</li>
+            <li>Check for spelling and grammar errors</li>
+            <li>Hover over links to see the actual URL before clicking</li>
+            <li>When in doubt, contact your IT security team</li>
+        </ul>
+    </div>
+    
+    <div class="info">
+        <h3>📊 Simulation Details:</h3>
+        <p><strong>Time clicked:</strong> {{ event.clicked_at }}</p>
+        <p><strong>Your IP:</strong> {{ event.user_ip }}</p>
+        <p><strong>Campaign:</strong> {{ event.campaign.name }}</p>
+    </div>
+    
+    <p><a href="/admin/">Return to Admin</a></p>
+</body>
+</html>
