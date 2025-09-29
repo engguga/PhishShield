@@ -166,3 +166,17 @@ Proprietary - For internal organizational use only.
 - Security Guidelines
 - API Documentation
 - Deployment Guide
+## Development Status
+
+![CI/CD](https://github.com/your-username/phishshield-platform/workflows/CI/CD%20Pipeline/badge.svg)
+![Security](https://img.shields.io/badge/Security-Level%20A-green)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Django](https://img.shields.io/badge/Django-4.2-green)
+
+## Contributing
+
+Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting issues or pull requests.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
